@@ -3,7 +3,7 @@ const express = require("express"); // Express framework for handling HTTP reque
 const bodyParser = require("body-parser"); // Middleware for parsing request bodies
 const crypto = require("crypto"); // Node.js crypto module for encryption and decryption
 const _sodium = require("libsodium-wrappers");
-
+const volleyball = require("volleyball");
 const port = 3000; // Port on which the server will listen
 const ENCRYPTION_PRIVATE_KEY =
   "MC4CAQAwBQYDK2VuBCIEIJB+WU+hBGAo2yUZo2TOJx8ymerXLFKw+AoT+pSiYolb";
@@ -45,9 +45,9 @@ const sharedKey = crypto.diffieHellman({
   privateKey: privateKey,
   publicKey: publicKey,
 });
-
 // Create an Express application
 const app = express();
+app.use(volleyball);
 app.use(bodyParser.json()); // Middleware to parse JSON request bodies
 
 // Route for handling subscription requests
@@ -56,6 +56,40 @@ app.post("/on_subscribe", function (req, res) {
   const answer = decryptAES256ECB(sharedKey, challenge); // Decrypt the challenge using AES-256-ECB
   const resp = { answer: answer };
   res.status(200).json(resp); // Send a JSON response with the answer
+});
+
+app.post("/on_search", async (req, res) => {
+  try {
+    // Step 3: Log and analyze the response
+    console.log("Received on_search response:", req.body);
+
+    // Step 4: Process the catalog response (list of products or services)
+    const onSearchResponse = req.body;
+    const catalog = onSearchResponse.message?.catalog;
+
+    if (!catalog || !catalog.bpp_providers) {
+      console.log("No providers found in on_search response");
+      return res.status(400).send({ message: "Invalid response" });
+    }
+
+    // Step 5: Extract and log items from catalog (you can display this to the user)
+    catalog.bpp_providers.forEach((provider) => {
+      console.log(`Provider Name: ${provider.descriptor.name}`);
+      provider.items.forEach((item) => {
+        console.log(
+          `Item Name: ${item.descriptor.name}, Price: ${item.price.value}`
+        );
+      });
+    });
+
+    // Step 6: Send an acknowledgment response
+    res
+      .status(200)
+      .send({ message: "on_search response received and processed" });
+  } catch (error) {
+    console.error("Error processing on_search response:", error);
+    res.status(500).send({ message: "Error processing response" });
+  }
 });
 
 // Route for serving a verification file

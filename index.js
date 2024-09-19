@@ -58,7 +58,7 @@ app.post("/on_subscribe", function (req, res) {
   res.status(200).json(resp); // Send a JSON response with the answer
 });
 
-app.post("/bapl/on_search", (req, res) => {
+app.post("/on_search", (req, res) => {
   const { context, message } = req.body;
 
   // Log the callback response for debugging

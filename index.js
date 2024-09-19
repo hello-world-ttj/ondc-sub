@@ -59,18 +59,10 @@ app.post("/on_subscribe", function (req, res) {
 });
 
 app.post("/on_search", (req, res) => {
-  const { context, message } = req.body;
-
-  // Log the callback response for debugging
   console.log("Received on_search callback:", req.body);
 
   // Validate the context and message
-  if (context && message) {
-    // Process the response (e.g., save to database, return products to user, etc.)
-    console.log("Context:", context);
-    console.log("Message:", message);
-
-    // Send ACK response to the sender of the callback
+  if (req.body) {
     res.status(200).json({ status: "ACK" });
   } else {
     // Send NACK if the message or context is invalid

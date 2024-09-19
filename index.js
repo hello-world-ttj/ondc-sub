@@ -80,6 +80,18 @@ app.post("/on_search", (req, res) => {
   }
 });
 
+app.post("/bapl", (req, res) => {
+  const { context, message } = req.body;
+  console.log("Received on_search callback:", req.body);
+  if (context && message) {
+    res.status(200).json({ status: "ACK" });
+  } else {
+    res
+      .status(400)
+      .json({ status: "NACK", error: { type: "Validation", code: "40001" } });
+  }
+});
+
 // Route for serving a verification file
 app.get("/ondc-site-verification.html", async (req, res) => {
   const signedContent = await signMessage(REQUEST_ID, SIGNING_PRIVATE_KEY);

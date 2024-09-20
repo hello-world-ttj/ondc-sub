@@ -303,7 +303,7 @@ app.post("/on_status", (req, res) => {
   res.sendStatus(200);
 });
 
-app.post("/on_track", (req, res) => {
+app.post("/on_cancel", (req, res) => {
   try {
     const logDir = __dirname; // The directory where logs will be stored
 
@@ -311,25 +311,25 @@ app.post("/on_track", (req, res) => {
     const getNextLogFileName = () => {
       const files = fs.readdirSync(logDir); // Get all files in the directory
       const logFiles = files.filter(
-        (file) => file.startsWith("track_log_") && file.endsWith(".txt")
+        (file) => file.startsWith("cancel_log_") && file.endsWith(".txt")
       );
 
       if (logFiles.length === 0) {
-        return "track_log_.txt"; // First log file
+        return "cancel_log_.txt"; // First log file
       }
 
       const fileNumbers = logFiles.map((file) =>
-        parseInt(file.match(/track_log_(\d+)\.txt/)[1])
+        parseInt(file.match(/cancel_log_(\d+)\.txt/)[1])
       );
 
       const maxNumber = Math.max(...fileNumbers);
-      return `track_log_${maxNumber + 1}.txt`; // Increment the number
+      return `cancel_log_${maxNumber + 1}.txt`; // Increment the number
     };
 
     const logFilePath = path.join(logDir, getNextLogFileName());
 
     // Convert req.body to a string for logging
-    const logData = `Received on_status callback: ${JSON.stringify(
+    const logData = `Received on_cancel callback: ${JSON.stringify(
       req.body,
       null,
       2
@@ -345,14 +345,14 @@ app.post("/on_track", (req, res) => {
     });
 
     // Additional console logs
-    console.log("Received on_track body:", req.body);
-    console.log("Received on_track callback:", req.body.message.order);
+    console.log("Received on_cancel body:", req.body);
+    console.log("Received on_cancel callback:", req.body.message.order);
     console.log(
-      "Received on_track callback:",
+      "Received on_cancel callback:",
       req.body.message.order.fulfillments[0].state
     );
   } catch (error) {
-    console.log("Error in on_track callback:", error);
+    console.log("Error in on_cancel callback:", error);
   }
   res.sendStatus(200);
 });

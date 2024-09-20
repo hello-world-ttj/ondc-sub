@@ -1,10 +1,12 @@
-// Import required modules
-const express = require("express"); // Express framework for handling HTTP requests
-const bodyParser = require("body-parser"); // Middleware for parsing request bodies
-const crypto = require("crypto"); // Node.js crypto module for encryption and decryption
+const express = require("express");
+const bodyParser = require("body-parser");
+const crypto = require("crypto");
 const _sodium = require("libsodium-wrappers");
 const volleyball = require("volleyball");
-const port = 3000; // Port on which the server will listen
+const fs = require("fs");
+const path = require("path");
+const port = 3000;
+
 const ENCRYPTION_PRIVATE_KEY =
   "MC4CAQAwBQYDK2VuBCIEIJB+WU+hBGAo2yUZo2TOJx8ymerXLFKw+AoT+pSiYolb";
 const ONDC_PUBLIC_KEY =
@@ -28,16 +30,16 @@ const htmlFile = `
   </body>
 </html>
 `;
-// Pre-defined public and private keys
+
 const privateKey = crypto.createPrivateKey({
-  key: Buffer.from(ENCRYPTION_PRIVATE_KEY, "base64"), // Decode private key from base64
-  format: "der", // Specify the key format as DER
-  type: "pkcs8", // Specify the key type as PKCS#8
+  key: Buffer.from(ENCRYPTION_PRIVATE_KEY, "base64"),
+  format: "der",
+  type: "pkcs8",
 });
 const publicKey = crypto.createPublicKey({
-  key: Buffer.from(ONDC_PUBLIC_KEY, "base64"), // Decode public key from base64
-  format: "der", // Specify the key format as DER
-  type: "spki", // Specify the key type as SubjectPublicKeyInfo (SPKI)
+  key: Buffer.from(ONDC_PUBLIC_KEY, "base64"),
+  format: "der",
+  type: "spki",
 });
 
 // Calculate the shared secret key using Diffie-Hellman
@@ -45,65 +47,92 @@ const sharedKey = crypto.diffieHellman({
   privateKey: privateKey,
   publicKey: publicKey,
 });
-// Create an Express application
+
 const app = express();
 app.use(volleyball);
-app.use(bodyParser.json()); // Middleware to parse JSON request bodies
+app.use(bodyParser.json({ limit: "10mb" })); // Increase the request body size limit
 
-// Route for handling subscription requests
 app.post("/on_subscribe", function (req, res) {
-  const { challenge } = req.body; // Extract the 'challenge' property from the request body
-  const answer = decryptAES256ECB(sharedKey, challenge); // Decrypt the challenge using AES-256-ECB
-  const resp = { answer: answer };
-  res.status(200).json(resp); // Send a JSON response with the answer
+  const { challenge } = req.body;
+  const answer = decryptAES256ECB(sharedKey, challenge);
+  res.status(200).json({ answer });
 });
 
 app.post("/on_search", (req, res) => {
-  console.log("Received on_search callback:", req.body);
+  try {
+    const logFilePath = path.join(__dirname, "search_log.txt");
 
-  // Validate the context and message
-  if (req.body) {
-    res.status(200).json({ status: "ACK" });
-  } else {
-    // Send NACK if the message or context is invalid
-    res
-      .status(400)
-      .json({ status: "NACK", error: { type: "Validation", code: "40001" } });
+    // Convert req.body to a string for logging
+    const logData = `Received on_search callback: ${JSON.stringify(
+      req.body,
+      null,
+      2
+    )}\n`;
+
+    // Append the log data to the file
+    fs.appendFile(logFilePath, logData, (err) => {
+      if (err) {
+        console.error("Error writing to log file:", err);
+      } else {
+        console.log("Log saved to search_log.txt");
+      }
+    });
+
+    // Additional console logs
+    console.log("Received on_search callback:", req.body.message);
+    console.log("", req.body.message.catalog["bpp/providers"]);
+  } catch (error) {
+    console.log("Error in on_search callback:", error);
   }
+  res.sendStatus(200);
 });
 
-app.post("/bapl", (req, res) => {
-  const { context, message } = req.body;
-  console.log("Received on_search callback:", req.body);
-  if (context && message) {
-    res.status(200).json({ status: "ACK" });
-  } else {
-    res
-      .status(400)
-      .json({ status: "NACK", error: { type: "Validation", code: "40001" } });
+app.post("/on_select", (req, res) => {
+  try {
+    const logFilePath = path.join(__dirname, "select_log.txt");
+
+    // Convert req.body to a string for logging
+    const logData = `Received on_select callback: ${JSON.stringify(
+      req.body,
+      null,
+      2
+    )}\n`;
+
+    // Append the log data to the file
+    fs.appendFile(logFilePath, logData, (err) => {
+      if (err) {
+        console.error("Error writing to log file:", err);
+      } else {
+        console.log("Log saved to select_log.txt");
+      }
+    });
+
+    // Additional console logs
+    console.log("Received on_select body:", req.body);
+    console.log("Received on_select callback:", req.body.message.order);
+    console.log(
+      "Received on_select callback:",
+      req.body.message.order.fulfillments[0].state
+    );
+  } catch (error) {
+    console.log("Error in on_select callback:", error);
   }
+  res.sendStatus(200);
 });
 
-// Route for serving a verification file
 app.get("/ondc-site-verification.html", async (req, res) => {
   const signedContent = await signMessage(REQUEST_ID, SIGNING_PRIVATE_KEY);
-  // Replace the placeholder with the actual value
   const modifiedHTML = htmlFile.replace(/SIGNED_UNIQUE_REQ_ID/g, signedContent);
-  // Send the modified HTML as the response
   res.send(modifiedHTML);
 });
 
-// Default route
 app.get("/", (req, res) => res.send("Hello World!"));
-
-// Health check route
 app.get("/health", (req, res) => res.send("Health OK!!"));
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
-// Decrypt using AES-256-ECB
 function decryptAES256ECB(key, encrypted) {
-  const iv = Buffer.alloc(0); // ECB doesn't use IV
+  const iv = Buffer.alloc(0);
   const decipher = crypto.createDecipheriv("aes-256-ecb", key, iv);
   let decrypted = decipher.update(encrypted, "base64", "utf8");
   decrypted += decipher.final("utf8");
@@ -117,9 +146,5 @@ async function signMessage(signingString, privateKey) {
     signingString,
     sodium.from_base64(privateKey, _sodium.base64_variants.ORIGINAL)
   );
-  const signature = sodium.to_base64(
-    signedMessage,
-    _sodium.base64_variants.ORIGINAL
-  );
-  return signature;
+  return sodium.to_base64(signedMessage, _sodium.base64_variants.ORIGINAL);
 }

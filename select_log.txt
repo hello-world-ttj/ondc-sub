@@ -1,0 +1,224 @@
+Received on_select callback: {
+  "context": {
+    "domain": "nic2004:52110",
+    "country": "IND",
+    "city": "std:080",
+    "core_version": "1.2.0",
+    "bap_id": "ondc.eatiko.com",
+    "bap_uri": "https://3839-59-182-122-86.ngrok-free.app",
+    "ttl": "P1M",
+    "action": "on_select",
+    "bpp_id": "ondcsellerapp.revalsys.com",
+    "bpp_uri": "https://ondcsellerapp.revalsys.com/api/ondc",
+    "transaction_id": "6df1f836-8744-42fb-b36a-9ba337825336",
+    "message_id": "db2413c9-113a-403e-88d2-890a8dd9cf0c",
+    "timestamp": "2024-09-19T16:09:40Z"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "wsi",
+        "locations": [
+          {
+            "id": "RL1"
+          }
+        ]
+      },
+      "items": [
+        {
+          "fulfillment_id": "F1",
+          "id": "wsi|0F81B74E-485F-4505-9E43-977DD18188DC"
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "F1",
+          "@ondc/org/provider_name": "wsi",
+          "tracking": false,
+          "@ondc/org/category": "Immediate Delivery",
+          "@ondc/org/TAT": "PT45M",
+          "state": {
+            "descriptor": {
+              "code": "Serviceable"
+            }
+          },
+          "type": "Delivery"
+        }
+      ],
+      "quote": {
+        "price": {
+          "currency": "INR",
+          "value": "13007"
+        },
+        "ttl": "P1D",
+        "breakup": [
+          {
+            "@ondc/org/item_id": "wsi|0F81B74E-485F-4505-9E43-977DD18188DC",
+            "@ondc/org/item_quantity": {
+              "count": 1
+            },
+            "title": "Fossil Privateer Smoke Watch",
+            "@ondc/org/title_type": "item",
+            "price": {
+              "currency": "INR",
+              "value": "12897"
+            },
+            "item": {
+              "quantity": {
+                "available": {
+                  "count": "100"
+                },
+                "maximum": {
+                  "count": "100"
+                }
+              },
+              "price": {
+                "currency": "INR",
+                "value": "12897.00"
+              }
+            }
+          },
+          {
+            "@ondc/org/item_id": "F1",
+            "title": "Delivery charges",
+            "@ondc/org/title_type": "delivery",
+            "price": {
+              "currency": "INR",
+              "value": "40.0"
+            }
+          },
+          {
+            "@ondc/org/item_id": "F1",
+            "title": "Packing charges",
+            "@ondc/org/title_type": "packing",
+            "price": {
+              "currency": "INR",
+              "value": "20.0"
+            }
+          },
+          {
+            "@ondc/org/item_id": "F1",
+            "title": "Convenience Fee",
+            "@ondc/org/title_type": "misc",
+            "price": {
+              "currency": "INR",
+              "value": "50.0"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+Received on_select callback: {
+  "context": {
+    "domain": "nic2004:52110",
+    "country": "IND",
+    "city": "std:080",
+    "core_version": "1.2.0",
+    "bap_id": "ondc.eatiko.com",
+    "bap_uri": "https://d9a7-59-182-122-86.ngrok-free.app",
+    "ttl": "P1M",
+    "action": "on_select",
+    "bpp_id": "ondcsellerapp.revalsys.com",
+    "bpp_uri": "https://ondcsellerapp.revalsys.com/api/ondc",
+    "transaction_id": "3ff9a98f-b413-4210-8959-00c780422f1a",
+    "message_id": "0cf9cd26-745f-4cde-88d2-56dc210b8f76",
+    "timestamp": "2024-09-20T04:58:08Z"
+  },
+  "message": {
+    "order": {
+      "provider": {
+        "id": "wsi",
+        "locations": [
+          {
+            "id": "RL1"
+          }
+        ]
+      },
+      "items": [
+        {
+          "fulfillment_id": "F1",
+          "id": "wsi|0F81B74E-485F-4505-9E43-977DD18188DC"
+        }
+      ],
+      "fulfillments": [
+        {
+          "id": "F1",
+          "@ondc/org/provider_name": "wsi",
+          "tracking": false,
+          "@ondc/org/category": "Immediate Delivery",
+          "@ondc/org/TAT": "PT45M",
+          "state": {
+            "descriptor": {
+              "code": "Serviceable"
+            }
+          },
+          "type": "Delivery"
+        }
+      ],
+      "quote": {
+        "price": {
+          "currency": "INR",
+          "value": "13007"
+        },
+        "ttl": "P1D",
+        "breakup": [
+          {
+            "@ondc/org/item_id": "wsi|0F81B74E-485F-4505-9E43-977DD18188DC",
+            "@ondc/org/item_quantity": {
+              "count": 1
+            },
+            "title": "Fossil Privateer Smoke Watch",
+            "@ondc/org/title_type": "item",
+            "price": {
+              "currency": "INR",
+              "value": "12897"
+            },
+            "item": {
+              "quantity": {
+                "available": {
+                  "count": "100"
+                },
+                "maximum": {
+                  "count": "100"
+                }
+              },
+              "price": {
+                "currency": "INR",
+                "value": "12897.00"
+              }
+            }
+          },
+          {
+            "@ondc/org/item_id": "F1",
+            "title": "Delivery charges",
+            "@ondc/org/title_type": "delivery",
+            "price": {
+              "currency": "INR",
+              "value": "40.0"
+            }
+          },
+          {
+            "@ondc/org/item_id": "F1",
+            "title": "Packing charges",
+            "@ondc/org/title_type": "packing",
+            "price": {
+              "currency": "INR",
+              "value": "20.0"
+            }
+          },
+          {
+            "@ondc/org/item_id": "F1",
+            "title": "Convenience Fee",
+            "@ondc/org/title_type": "misc",
+            "price": {
+              "currency": "INR",
+              "value": "50.0"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

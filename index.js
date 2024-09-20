@@ -89,7 +89,28 @@ app.post("/on_search", (req, res) => {
 
 app.post("/on_select", (req, res) => {
   try {
-    const logFilePath = path.join(__dirname, "select_log.txt");
+    const logDir = __dirname; // The directory where logs will be stored
+
+    // Function to get the next file number for naming
+    const getNextLogFileName = () => {
+      const files = fs.readdirSync(logDir); // Get all files in the directory
+      const logFiles = files.filter(
+        (file) => file.startsWith("select_log_") && file.endsWith(".txt")
+      );
+
+      if (logFiles.length === 0) {
+        return "select_log_1.txt"; // First log file
+      }
+
+      const fileNumbers = logFiles.map((file) =>
+        parseInt(file.match(/select_log_(\d+)\.txt/)[1])
+      );
+
+      const maxNumber = Math.max(...fileNumbers);
+      return `select_log_${maxNumber + 1}.txt`; // Increment the number
+    };
+
+    const logFilePath = path.join(logDir, getNextLogFileName());
 
     // Convert req.body to a string for logging
     const logData = `Received on_select callback: ${JSON.stringify(
@@ -98,12 +119,12 @@ app.post("/on_select", (req, res) => {
       2
     )}\n`;
 
-    // Append the log data to the file
-    fs.appendFile(logFilePath, logData, (err) => {
+    // Append the log data to the new file
+    fs.writeFile(logFilePath, logData, (err) => {
       if (err) {
         console.error("Error writing to log file:", err);
       } else {
-        console.log("Log saved to select_log.txt");
+        console.log(`Log saved to ${logFilePath}`);
       }
     });
 

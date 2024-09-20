@@ -249,6 +249,60 @@ app.post("/on_confirm", (req, res) => {
   res.sendStatus(200);
 });
 
+app.post("/on_status", (req, res) => {
+  try {
+    const logDir = __dirname; // The directory where logs will be stored
+
+    // Function to get the next file number for naming
+    const getNextLogFileName = () => {
+      const files = fs.readdirSync(logDir); // Get all files in the directory
+      const logFiles = files.filter(
+        (file) => file.startsWith("status_log_") && file.endsWith(".txt")
+      );
+
+      if (logFiles.length === 0) {
+        return "status_log_.txt"; // First log file
+      }
+
+      const fileNumbers = logFiles.map((file) =>
+        parseInt(file.match(/status_log_(\d+)\.txt/)[1])
+      );
+
+      const maxNumber = Math.max(...fileNumbers);
+      return `status_log_${maxNumber + 1}.txt`; // Increment the number
+    };
+
+    const logFilePath = path.join(logDir, getNextLogFileName());
+
+    // Convert req.body to a string for logging
+    const logData = `Received on_status callback: ${JSON.stringify(
+      req.body,
+      null,
+      2
+    )}\n`;
+
+    // Append the log data to the new file
+    fs.writeFile(logFilePath, logData, (err) => {
+      if (err) {
+        console.error("Error writing to log file:", err);
+      } else {
+        console.log(`Log saved to ${logFilePath}`);
+      }
+    });
+
+    // Additional console logs
+    console.log("Received on_status body:", req.body);
+    console.log("Received on_status callback:", req.body.message.order);
+    console.log(
+      "Received on_status callback:",
+      req.body.message.order.fulfillments[0].state
+    );
+  } catch (error) {
+    console.log("Error in on_status callback:", error);
+  }
+  res.sendStatus(200);
+});
+
 app.get("/ondc-site-verification.html", async (req, res) => {
   const signedContent = await signMessage(REQUEST_ID, SIGNING_PRIVATE_KEY);
   const modifiedHTML = htmlFile.replace(/SIGNED_UNIQUE_REQ_ID/g, signedContent);
